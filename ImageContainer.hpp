@@ -1,5 +1,5 @@
-#ifndef _ImageProcessor_h
-#define _ImageProcessor_h
+#ifndef _ImageContainer_h
+#define _ImageContainer_h
 
 
 //OpenCV:
@@ -15,10 +15,10 @@
 #include <string>
 
 
-class ImageProcessor
+class ImageContainer
 {
 public:
-	ImageProcessor(std::string filename);
+	ImageContainer(std::string filename);
 	bool saveToFile(std::string filename, std::string params);
 
 	cv::Mat& getImage();

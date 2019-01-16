@@ -1,4 +1,4 @@
-#include "ImageProcessor.hpp"
+#include "ImageContainer.hpp"
 
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
@@ -9,7 +9,7 @@
 #include <string>
 
 
-ImageProcessor::ImageProcessor(std::string filename)
+ImageContainer::ImageContainer(std::string filename)
 {
 	printf("opening...\n"); fflush(stdout);
 	
@@ -68,7 +68,7 @@ ImageProcessor::ImageProcessor(std::string filename)
 
 }
 
-bool ImageProcessor::saveToFile(std::string filename, std::string params)
+bool ImageContainer::saveToFile(std::string filename, std::string params)
 {
 	bool result;
 	std::vector<int> p;
@@ -97,50 +97,50 @@ bool ImageProcessor::saveToFile(std::string filename, std::string params)
 	return true;
 }
 
-bool ImageProcessor::isOk()
+bool ImageContainer::isOk()
 {
 	if (image.data == NULL) return false;
 	return true;
 }
 
-int ImageProcessor::getWidth()
+int ImageContainer::getWidth()
 {
 	return image.cols;
 }
 
-int ImageProcessor::getHeight()
+int ImageContainer::getHeight()
 {
 	return image.rows;
 }
 
-int ImageProcessor::getColors()
+int ImageContainer::getColors()
 {
 	return image.channels();
 }
 
-cv::Mat& ImageProcessor::getImage()
+cv::Mat& ImageContainer::getImage()
 {
 	return image;
 }
 
-Exiv2::ExifData& ImageProcessor::getMetadata()
+Exiv2::ExifData& ImageContainer::getMetadata()
 {
 	return metadata;
 }
 
-cmsHPROFILE& ImageProcessor::getProfile()
+cmsHPROFILE& ImageContainer::getProfile()
 {	
 	return profile;
 }
 
-void ImageProcessor::displayImage()
+void ImageContainer::displayImage()
 {
 	cv::namedWindow("Display Image", cv::WINDOW_AUTOSIZE );
 	cv::imshow("Display Image", image);
 	cv::waitKey(0);
 }
 
-void ImageProcessor::printMetadata()
+void ImageContainer::printMetadata()
 {
 
 	char * buf; cmsUInt32Number bufsize;
@@ -178,14 +178,14 @@ void ImageProcessor::printMetadata()
 }
 
 
-void ImageProcessor::applyBlur()
+void ImageContainer::applyBlur()
 {
 	cv::Mat d = image.clone();
 	cv::blur( image, d, cv::Size( 3, 3 ), cv::Point(-1,-1) );
 	image = d;
 }
 
-void ImageProcessor::applyResize(int width, int height)
+void ImageContainer::applyResize(int width, int height)
 {
 	unsigned dw = getWidth();
 	unsigned dh = getHeight();
