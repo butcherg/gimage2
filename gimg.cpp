@@ -1,4 +1,4 @@
-#include "ImageContainer.hpp"
+#include "ImageProcessor.hpp"
 #include <string>
 
 //using namespace cv;
@@ -9,7 +9,7 @@ int main( int argc, char** argv )
 	std::string imageName( "foo.jpg" ); // by default
 	if( argc > 1) imageName = argv[1];
 
-	ImageContainer img(imageName);
+	ImageProcessor img(imageName);
 	if (!img.isOk()) return 1;
 	img.printMetadata();
 

@@ -39,8 +39,9 @@ ImageContainer::ImageContainer(std::string filename)
 		image = r.clone();
 		if (b==8)  image.convertTo(image, CV_32FC3, 1.0/256.0);
 		if (b==16) image.convertTo(image, CV_32FC3, 1.0/65536.0);
+		
 		//cvtColor(image, image, cv::COLOR_RGB2BGR);
-		cvtColor(image, image, cv::COLOR_BGR2RGB);
+		//cvtColor(image, image, cv::COLOR_BGR2RGB);
 		LibRaw::dcraw_clear_mem((libraw_processed_image_t*) r.data);
 		RawProcessor.recycle();
 	}

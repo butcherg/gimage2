@@ -36,7 +36,7 @@ public:
 	void applyBlur();
 	void applyResize(int width, int height);
 
-private:
+protected:
 	cv::Mat image;
 	Exiv2::ExifData metadata;
 	cmsHPROFILE profile;

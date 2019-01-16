@@ -1,20 +1,23 @@
 CC=g++
 EXT=.exe
 
-CFLAGS=$(shell pkg-config --cflags libraw opencv4 exiv2 lcms2)
-LIBS=$(shell pkg-config --libs libraw opencv4 exiv2 lcms2)
+CFLAGS=$(shell pkg-config --cflags libraw opencv exiv2 lcms2)
+LIBS=$(shell pkg-config --libs libraw opencv exiv2 lcms2)
 
 CFLAGS+=-DLIBRAW_NODLL
 LIBS+=-ljpeg -lws2_32
 
-gimg: gimg.o gimage.o
-	$(CC) -L/usr/local/lib -pthread -o gimg gimg.o gimage.o $(LIBS)
+gimg: gimg.o ImageContainer.o ImageProcessor.o
+	$(CC) -pthread -o gimg gimg.o ImageContainer.o ImageProcessor.o $(LIBS)
 
 gimg.o: gimg.cpp
 	$(CC) $(CFLAGS) -o gimg.o -c gimg.cpp
 
-gimage.o: gimage.cpp
-	$(CC) $(CFLAGS) -o gimage.o -c gimage.cpp
+ImageProcessor.o: ImageProcessor.cpp
+	$(CC) $(CFLAGS) -o ImageProcessor.o -c ImageProcessor.cpp
+
+ImageContainer.o: ImageContainer.cpp
+	$(CC) $(CFLAGS) -o ImageContainer.o -c ImageContainer.cpp
 
 clean:
 	rm -rf *.o gimg$(EXT)
