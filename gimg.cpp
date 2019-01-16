@@ -10,9 +10,10 @@ int main( int argc, char** argv )
 	if( argc > 1) imageName = argv[1];
 
 	gImage img(imageName);
+	if (!img.isOk()) return 1;
 	img.printMetadata();
 
-	img.applyResize(640, 480);
+	img.applyResize(640, 0);
 	img.displayImage();
 
 	imageName = "foo.png";

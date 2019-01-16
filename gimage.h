@@ -1,17 +1,18 @@
+#ifndef _gimage_h
+#define _gimage_h
+
+
 //OpenCV:
-#include "opencv2/core.hpp"
 #include <opencv2/core.hpp>
-#include <opencv2/imgcodecs.hpp>
-#include <opencv2/highgui.hpp>
 
 //Exiv2:
 #include <exiv2/exiv2.hpp>
 
 //LittleCMS2
-#include "lcms2.h"
+#include <lcms2.h>
 
 //std library:
-#include <iostream>
+//#include <iostream>
 #include <string>
 
 
@@ -25,6 +26,7 @@ public:
 	Exiv2::ExifData& getMetadata();
 	cmsHPROFILE& getProfile();
 
+	bool isOk();
 	int getWidth();
 	int getHeight();
 	int getColors();
@@ -42,3 +44,4 @@ private:
 
 };
 
+#endif
