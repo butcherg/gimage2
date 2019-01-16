@@ -1,4 +1,4 @@
-#include "gimage.h"
+#include "ImageProcessor.hpp"
 
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
@@ -9,7 +9,7 @@
 #include <string>
 
 
-gImage::gImage(std::string filename)
+ImageProcessor::ImageProcessor(std::string filename)
 {
 	printf("opening...\n"); fflush(stdout);
 	
@@ -68,7 +68,7 @@ gImage::gImage(std::string filename)
 
 }
 
-bool gImage::saveToFile(std::string filename, std::string params)
+bool ImageProcessor::saveToFile(std::string filename, std::string params)
 {
 	bool result;
 	std::vector<int> p;
@@ -97,50 +97,50 @@ bool gImage::saveToFile(std::string filename, std::string params)
 	return true;
 }
 
-bool gImage::isOk()
+bool ImageProcessor::isOk()
 {
 	if (image.data == NULL) return false;
 	return true;
 }
 
-int gImage::getWidth()
+int ImageProcessor::getWidth()
 {
 	return image.cols;
 }
 
-int gImage::getHeight()
+int ImageProcessor::getHeight()
 {
 	return image.rows;
 }
 
-int gImage::getColors()
+int ImageProcessor::getColors()
 {
 	return image.channels();
 }
 
-cv::Mat& gImage::getImage()
+cv::Mat& ImageProcessor::getImage()
 {
 	return image;
 }
 
-Exiv2::ExifData& gImage::getMetadata()
+Exiv2::ExifData& ImageProcessor::getMetadata()
 {
 	return metadata;
 }
 
-cmsHPROFILE& gImage::getProfile()
+cmsHPROFILE& ImageProcessor::getProfile()
 {	
 	return profile;
 }
 
-void gImage::displayImage()
+void ImageProcessor::displayImage()
 {
 	cv::namedWindow("Display Image", cv::WINDOW_AUTOSIZE );
 	cv::imshow("Display Image", image);
 	cv::waitKey(0);
 }
 
-void gImage::printMetadata()
+void ImageProcessor::printMetadata()
 {
 
 	char * buf; cmsUInt32Number bufsize;
@@ -178,14 +178,14 @@ void gImage::printMetadata()
 }
 
 
-void gImage::applyBlur()
+void ImageProcessor::applyBlur()
 {
 	cv::Mat d = image.clone();
 	cv::blur( image, d, cv::Size( 3, 3 ), cv::Point(-1,-1) );
 	image = d;
 }
 
-void gImage::applyResize(int width, int height)
+void ImageProcessor::applyResize(int width, int height)
 {
 	unsigned dw = getWidth();
 	unsigned dh = getHeight();

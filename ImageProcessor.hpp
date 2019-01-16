@@ -1,5 +1,5 @@
-#ifndef _gimage_h
-#define _gimage_h
+#ifndef _ImageProcessor_h
+#define _ImageProcessor_h
 
 
 //OpenCV:
@@ -12,14 +12,13 @@
 #include <lcms2.h>
 
 //std library:
-//#include <iostream>
 #include <string>
 
 
-class gImage
+class ImageProcessor
 {
 public:
-	gImage(std::string filename);
+	ImageProcessor(std::string filename);
 	bool saveToFile(std::string filename, std::string params);
 
 	cv::Mat& getImage();
