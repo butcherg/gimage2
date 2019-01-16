@@ -1,4 +1,4 @@
-#include "gimage.h"
+#include "ImageContainer.hpp"
 #include <string>
 
 //using namespace cv;
@@ -9,7 +9,7 @@ int main( int argc, char** argv )
 	std::string imageName( "foo.jpg" ); // by default
 	if( argc > 1) imageName = argv[1];
 
-	gImage img(imageName);
+	ImageContainer img(imageName);
 	if (!img.isOk()) return 1;
 	img.printMetadata();
 
