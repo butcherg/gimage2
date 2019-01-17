@@ -6,7 +6,6 @@
 class ImageProcessor: public ImageContainer
 {
 public:
-	ImageProcessor(std::string filename);
 	void applyBlur();
 	void applyResize(int width, int height);
 };

@@ -18,8 +18,11 @@
 class ImageContainer
 {
 public:
-	ImageContainer(std::string filename);
-	bool saveToFile(std::string filename, std::string params);
+	ImageContainer();
+	ImageContainer(const ImageContainer &imagecontainer);
+
+	bool openFile(std::string filename);
+	bool saveFile(std::string filename, std::string params);
 
 	cv::Mat& getImage();
 	Exiv2::ExifData& getMetadata();

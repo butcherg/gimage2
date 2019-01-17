@@ -10,8 +10,19 @@
 #include <iostream>
 #include <string>
 
+ImageContainer::ImageContainer()
+{
+	profile = NULL;
+}
 
-ImageContainer::ImageContainer(std::string filename)
+ImageContainer::ImageContainer(const ImageContainer &imagecontainer)
+{
+	image = imagecontainer.image.clone();
+	metadata = Exiv2::ExifData(imagecontainer.metadata);
+	profile = imagecontainer.profile;  //lcms maintains the profile guts, cmsHPROFILE is a handle to it
+}
+
+bool ImageContainer::openFile(std::string filename)
 {
 	printf("opening...\n"); fflush(stdout);
 	
@@ -59,7 +70,7 @@ ImageContainer::ImageContainer(std::string filename)
 		image = cv::imread(filename, cv::IMREAD_COLOR);
 		if (image.data == NULL) {
 			printf("couldn't open image.\n"); fflush(stdout);
-			return;
+			return false;
 		}
 		if ((image.depth() == CV_8U) | (image.depth() == CV_8S)) image.convertTo(image, CV_32F,  1.0/256.0);
 		if ((image.depth() == CV_16U) | (image.depth() == CV_16S)) image.convertTo(image, CV_32F,  1.0/65536.0);
@@ -77,10 +88,10 @@ ImageContainer::ImageContainer(std::string filename)
 		profile = cmsOpenProfileFromMem(prof->pData_, prof->size_);
 	}
 	else profile = NULL;
-
+	return true;
 }
 
-bool ImageContainer::saveToFile(std::string filename, std::string params)
+bool ImageContainer::saveFile(std::string filename, std::string params)
 {
 	bool result;
 	std::vector<int> p;

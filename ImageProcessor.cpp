@@ -2,8 +2,6 @@
 
 #include <opencv2/imgproc.hpp>
 
-ImageProcessor::ImageProcessor(std::string filename): ImageContainer(filename) {};
-
 void ImageProcessor::applyBlur()
 {
 	cv::Mat d = image.clone();
