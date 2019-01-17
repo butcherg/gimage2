@@ -9,6 +9,13 @@ void ImageProcessor::applyBlur()
 	image = d;
 }
 
+void ImageProcessor::applyDemosaic()
+{
+	cv::Mat d = image.clone();
+	cv::demosaicing( image, d, cv::COLOR_BayerGB2BGR);
+	image = d;	
+}
+
 void ImageProcessor::applyResize(int width, int height)
 {
 	unsigned dw = getWidth();

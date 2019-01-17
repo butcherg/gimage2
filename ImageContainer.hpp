@@ -21,11 +21,13 @@ public:
 	ImageContainer();
 	ImageContainer(const ImageContainer &imagecontainer);
 
-	bool openFile(std::string filename);
-	bool saveFile(std::string filename, std::string params);
+	bool openFile(std::string filename, std::map<std::string, std::string> params = std::map<std::string, std::string>());
+	bool saveFile(std::string filename, std::map<std::string, std::string> params = std::map<std::string, std::string>());
 
 	cv::Mat& getImage();
-	Exiv2::ExifData& getMetadata();
+	Exiv2::ExifData& getEXIFData();
+	Exiv2::IptcData& getIPTCData();
+	Exiv2::XmpData& getXMPData();
 	cmsHPROFILE& getProfile();
 
 	bool isOk();
@@ -36,12 +38,12 @@ public:
 	void displayImage();
 	void printMetadata();
 
-	void applyBlur();
-	void applyResize(int width, int height);
 
 protected:
 	cv::Mat image;
-	Exiv2::ExifData metadata;
+	Exiv2::ExifData exifdata;
+	Exiv2::IptcData iptcdata;
+	Exiv2::XmpData xmpdata;
 	cmsHPROFILE profile;
 
 };
