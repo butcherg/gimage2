@@ -3,6 +3,8 @@
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
 
+#include <exiv2/error.hpp>
+
 #include <libraw/libraw.h>
 
 #include <iostream>
@@ -16,6 +18,7 @@ ImageContainer::ImageContainer(std::string filename)
 	//First, try raw file:
 	LibRaw RawProcessor;
 	int w, h, c, b; int t;
+	cv::Mat r;
 	
 	RawProcessor.imgdata.params.shot_select = 0;
 	RawProcessor.imgdata.params.use_camera_wb = 1;
@@ -24,7 +27,7 @@ ImageContainer::ImageContainer(std::string filename)
 	//RawProcessor.imgdata.params.no_auto_bright = 1;
 
 	RawProcessor.imgdata.params.output_bps = 16;
-
+	
 	RawProcessor.imgdata.params.gamm[0] = 1/2.4;  //1/1.0
 	RawProcessor.imgdata.params.gamm[1] = 12.92; //1.0
 	
@@ -33,18 +36,25 @@ ImageContainer::ImageContainer(std::string filename)
 		RawProcessor.dcraw_process();
 		RawProcessor.get_mem_image_format(&w, &h, &c, &b);
 		printf("w:%d h:%d c:%d b:%d\n",w,h,c,b); fflush(stdout); 
-		if (b==8)  t = CV_8UC3;
-		if (b==16) t = CV_16UC3;
-		cv::Mat r(h, w, t, RawProcessor.dcraw_make_mem_image());
+		libraw_processed_image_t *img = RawProcessor.dcraw_make_mem_image();
+		if (b==8)  
+			r = cv::Mat(img->height, img->width, CV_8UC3,  img->data);
+		else if (b==16) 
+			r = cv::Mat(img->height, img->width, CV_16UC3,  img->data);
 		image = r.clone();
-		if (b==8)  image.convertTo(image, CV_32FC3, 1.0/256.0);
-		if (b==16) image.convertTo(image, CV_32FC3, 1.0/65536.0);
-		
-		//cvtColor(image, image, cv::COLOR_RGB2BGR);
-		//cvtColor(image, image, cv::COLOR_BGR2RGB);
-		LibRaw::dcraw_clear_mem((libraw_processed_image_t*) r.data);
+		LibRaw::dcraw_clear_mem(img);
 		RawProcessor.recycle();
+				
+		if (b==8)  
+			image.convertTo(image, CV_32F, 1.0/256.0);
+		else if (b==16) 
+			image.convertTo(image, CV_32F, 1.0/65536.0);
+		
+		cvtColor(image, image, cv::COLOR_RGB2BGR);
+
 	}
+	
+	//Then, try the other image formats with opencv:
 	else {
 		image = cv::imread(filename, cv::IMREAD_COLOR);
 		if (image.data == NULL) {
@@ -56,6 +66,7 @@ ImageContainer::ImageContainer(std::string filename)
 
 	}
 	
+	Exiv2::LogMsg::setLevel (Exiv2::LogMsg::mute);
 	Exiv2::Image::AutoPtr img = Exiv2::ImageFactory::open(filename);
 	assert(img.get() != 0);
 	img->readMetadata();
@@ -78,6 +89,7 @@ bool ImageContainer::saveToFile(std::string filename, std::string params)
 	result = cv::imwrite(filename, img, p);
 	if (!result) return false;
 
+	Exiv2::LogMsg::setLevel (Exiv2::LogMsg::mute);
 	Exiv2::Image::AutoPtr image = Exiv2::ImageFactory::open(filename);
 	assert(image.get() != 0);
 
@@ -136,8 +148,10 @@ cmsHPROFILE& ImageContainer::getProfile()
 
 void ImageContainer::displayImage()
 {
+	cv::Mat draw;
+	image.convertTo(draw, CV_8U, 256.0);
 	cv::namedWindow("Display Image", cv::WINDOW_AUTOSIZE );
-	cv::imshow("Display Image", image);
+	cv::imshow("Display Image", draw);
 	cv::waitKey(0);
 }
 
