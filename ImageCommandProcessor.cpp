@@ -15,7 +15,23 @@ void ImageCommandProcessor::applyNormalization()
 
 void ImageCommandProcessor::applyResize(std::string params)
 {
+	int width=0, height=0, longest;
 	
+	std::map<std::string,std::string> p = parseparams(params);
+
+	if (p.find("longest") != p.end()) {
+		longest = atoi(p["longest"].c_str());
+		if (image.rows > image.cols) 
+			height = longest;
+		else
+			width = longest;
+	}
+	else {
+		width = p.find("width") != p.end() ? atoi(p["width"].c_str()) : 0;
+		height = p.find("height") != p.end() ? atoi(p["height"].c_str()) : 0;
+	}
+
+	ImageProcessor::applyResize(width, height);
 }
 
 

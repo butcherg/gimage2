@@ -35,7 +35,7 @@ bool ImageContainer::openFile(std::string filename, std::map<std::string, std::s
 	cv::Mat r;
 
 	std::string rawmode = params.find("mode") != params.end() ? params["mode"].c_str() : "dcraw"; // mode=dcraw|rawimage, default: dcraw
-printf("rawmode: %s\n",rawmode.c_str());	
+
 	RawProcessor.imgdata.params.shot_select = 	params.find("shot_select")    != params.end() ? atoi(params["shot_select"].c_str())	: 0;
 	RawProcessor.imgdata.params.use_camera_wb = 	params.find("use_camera_wb")  != params.end() ? atoi(params["use_camera_wb"].c_str())	: 1;
 	RawProcessor.imgdata.params.output_color =	params.find("output_color")   != params.end() ? atoi(params["output_color"].c_str())	: 1;  //sRGB
