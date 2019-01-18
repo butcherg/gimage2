@@ -10,7 +10,7 @@ CFLAGS+=-DLIBRAW_NODLL
 LIBS+=-ljpeg -lws2_32
 
 gimg: gimg.o ImageContainer.o ImageProcessor.o ImageCommandProcessor.o
-	$(CC) -pthread -o gimg gimg.o ImageContainer.o ImageProcessor.o ImageCommmandProcessor.o $(LIBS)
+	$(CC) -pthread -o gimg gimg.o ImageContainer.o ImageProcessor.o ImageCommandProcessor.o $(LIBS)
 
 gimg.o: $(sourcedir)/gimg.cpp
 	$(CC) $(CFLAGS) -o gimg.o -c $(sourcedir)/gimg.cpp
