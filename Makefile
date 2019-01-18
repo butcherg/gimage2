@@ -9,11 +9,14 @@ LIBS=$(shell pkg-config --libs libraw opencv exiv2 lcms2)
 CFLAGS+=-DLIBRAW_NODLL
 LIBS+=-ljpeg -lws2_32
 
-gimg: gimg.o ImageContainer.o ImageProcessor.o
-	$(CC) -pthread -o gimg gimg.o ImageContainer.o ImageProcessor.o $(LIBS)
+gimg: gimg.o ImageContainer.o ImageProcessor.o ImageCommandProcessor.o
+	$(CC) -pthread -o gimg gimg.o ImageContainer.o ImageProcessor.o ImageCommmandProcessor.o $(LIBS)
 
 gimg.o: $(sourcedir)/gimg.cpp
 	$(CC) $(CFLAGS) -o gimg.o -c $(sourcedir)/gimg.cpp
+
+ImageCommandProcessor.o: $(sourcedir)/ImageCommandProcessor.cpp
+	$(CC) $(CFLAGS) -o ImageCommandProcessor.o -c $(sourcedir)/ImageCommandProcessor.cpp
 
 ImageProcessor.o: $(sourcedir)/ImageProcessor.cpp
 	$(CC) $(CFLAGS) -o ImageProcessor.o -c $(sourcedir)/ImageProcessor.cpp
