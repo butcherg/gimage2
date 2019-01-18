@@ -9,10 +9,11 @@ std::vector<std::string> split(std::string s, std::string delim);
 class ImageCommandProcessor: public ImageProcessor
 {
 public:
-	//void applyBlur();
+	void applyBlur(std::string params);
 	//void applyDemosaic();
 	//void applyNormalization();
 	void applyResize(std::string params);
+	void applySharpen(std::string params);
 };
 
 #endif

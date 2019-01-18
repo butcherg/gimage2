@@ -13,12 +13,17 @@ void ImageCommandProcessor::applyNormalization()
 }
 */
 
+void ImageCommandProcessor::applyBlur(std::string params)
+{
+	std::map<std::string,std::string> p = parseparams(params);
+	unsigned kernelsize = p.find("kernelsize") != p.end() ? atoi(p["kernelsize"].c_str())  : 3;
+	ImageProcessor::applyBlur(kernelsize);
+}
+
 void ImageCommandProcessor::applyResize(std::string params)
 {
 	int width=0, height=0, longest;
-	
 	std::map<std::string,std::string> p = parseparams(params);
-
 	if (p.find("longest") != p.end()) {
 		longest = atoi(p["longest"].c_str());
 		if (image.rows > image.cols) 
@@ -27,14 +32,21 @@ void ImageCommandProcessor::applyResize(std::string params)
 			width = longest;
 	}
 	else {
-		width = p.find("width") != p.end() ? atoi(p["width"].c_str()) : 0;
+		width  = p.find("width")  != p.end() ? atoi(p["width"].c_str())  : 0;
 		height = p.find("height") != p.end() ? atoi(p["height"].c_str()) : 0;
 	}
-
 	ImageProcessor::applyResize(width, height);
 }
 
+void ImageCommandProcessor::applySharpen(std::string params)
+{
+	std::map<std::string,std::string> p = parseparams(params);
+	float strength = p.find("strength") != p.end() ? atof(p["strength"].c_str())  : 1.0;
+	ImageProcessor::applySharpen(strength);
+}
 
+
+//helper functions:
 
 std::vector<std::string> split(std::string s, std::string delim)
 {

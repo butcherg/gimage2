@@ -2,11 +2,14 @@
 
 #include <opencv2/imgproc.hpp>
 
-void ImageProcessor::applyBlur()
+void ImageProcessor::applyBlur(unsigned kernelsize)
 {
-	cv::Mat d = image.clone();
-	cv::blur( image, d, cv::Size( 3, 3 ), cv::Point(-1,-1) );
-	image = d;
+	cv::blur( image, image, cv::Size( kernelsize, kernelsize ), cv::Point(-1,-1) );
+}
+
+void ImageProcessor::applyLog()
+{
+	cv::log( image, image);
 }
 
 void ImageProcessor::applyDemosaic()
@@ -44,14 +47,29 @@ void ImageProcessor::applyDemosaic()
 		h /=2;
 		c = 3;
 */
+
+/* //candidate code for image walking (https://jayrambhia.wordpress.com/2012/06/23/get-data-from-mat-cvmat-in-opencv/):
+	unsigned char *input = (unsigned char*)(img.data);
+
+	int i,j,r,g,b;
+	for(int i = 0;i < img.rows ;i++){
+		for(int j = 0;j < img.cols ;j++){
+			b = img.step * j + i;
+			g = img.step * j + i + 1;  //or, b+1;
+			r = img.step * j + i + 2;  //or, g+1;
+
+			input[r] = //some processing... ;
+			input[g] = //some processing... ;
+			input[b] = //some processing... ;
+		}
+	}
+
+*/
 }
 
 void ImageProcessor::applyNormalization()
 {
-	double min, max;
-	cv::Mat d = image.clone();
-	cv::normalize(image, d, 0, 1, cv::NORM_MINMAX);
-	image = d;
+	cv::normalize(image, image, 0, 1, cv::NORM_MINMAX);
 }
 
 void ImageProcessor::applyResize(int width, int height)
@@ -61,9 +79,28 @@ void ImageProcessor::applyResize(int width, int height)
 	if (height ==  0) height = dh * ((float)width/(float)dw);
 	if (width == 0)  width = dw * ((float)height/(float)dh); 
 	
-	cv::Mat d = image.clone();
-	cv::resize( image, d, cv::Size( width, height), 0, 0, cv::INTER_LANCZOS4 );
-	image = d;
+	cv::resize( image, image, cv::Size( width, height), 0, 0, cv::INTER_LANCZOS4 );
+}
+
+void ImageProcessor::applySharpen(float strength)
+{
+	float k[3][3] =
+	{
+		0.0, 0.0, 0.0,
+		0.0, 0.0, 0.0,
+		0.0, 0.0, 0.0
+	};
+
+	//build a kernel corresponding to the specified strength
+	float x = -((strength)/4.0);
+	k[0][1] = x;
+	k[1][0] = x;
+	k[1][2] = x;
+	k[2][1] = x;
+	k[1][1] = strength+1;
+
+	cv::Mat kernel(3, 3, CV_32F, k);
+	cv::filter2D(image, image, -1, kernel);
 }
 
 

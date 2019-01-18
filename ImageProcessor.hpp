@@ -6,10 +6,12 @@
 class ImageProcessor: public ImageContainer
 {
 public:
-	void applyBlur();
+	void applyBlur(unsigned kernelsize=3);
 	void applyDemosaic();
+	void applyLog();
 	void applyNormalization();
 	void applyResize(int width, int height);
+	void applySharpen(float strength);
 };
 
 #endif

@@ -192,6 +192,14 @@ void ImageContainer::displayImage()
 	cv::waitKey(0);
 }
 
+void ImageContainer::displayImage(std::string displayname)
+{
+	cv::Mat draw;
+	image.convertTo(draw, CV_8U, 256.0);
+	cv::imshow(displayname, draw);
+	cv::waitKey(0);
+}
+
 void ImageContainer::printMetadata()
 {
 

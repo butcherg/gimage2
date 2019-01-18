@@ -36,6 +36,7 @@ public:
 	int getColors();
 
 	void displayImage();
+	void displayImage(std::string displayname);
 	void printMetadata();
 
 
