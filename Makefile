@@ -1,3 +1,5 @@
+sourcedir=.
+
 CC=g++
 EXT=.exe
 
@@ -10,14 +12,14 @@ LIBS+=-ljpeg -lws2_32
 gimg: gimg.o ImageContainer.o ImageProcessor.o
 	$(CC) -pthread -o gimg gimg.o ImageContainer.o ImageProcessor.o $(LIBS)
 
-gimg.o: gimg.cpp
-	$(CC) $(CFLAGS) -o gimg.o -c gimg.cpp
+gimg.o: $(sourcedir)/gimg.cpp
+	$(CC) $(CFLAGS) -o gimg.o -c $(sourcedir)/gimg.cpp
 
-ImageProcessor.o: ImageProcessor.cpp
-	$(CC) $(CFLAGS) -o ImageProcessor.o -c ImageProcessor.cpp
+ImageProcessor.o: $(sourcedir)/ImageProcessor.cpp
+	$(CC) $(CFLAGS) -o ImageProcessor.o -c $(sourcedir)/ImageProcessor.cpp
 
-ImageContainer.o: ImageContainer.cpp
-	$(CC) $(CFLAGS) -o ImageContainer.o -c ImageContainer.cpp
+ImageContainer.o: $(sourcedir)/ImageContainer.cpp
+	$(CC) $(CFLAGS) -o ImageContainer.o -c $(sourcedir)/ImageContainer.cpp
 
 clean:
 	rm -rf *.o gimg$(EXT)
