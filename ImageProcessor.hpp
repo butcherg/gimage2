@@ -8,6 +8,7 @@ class ImageProcessor: public ImageContainer
 public:
 	void applyBlur();
 	void applyDemosaic();
+	void applyNormalization();
 	void applyResize(int width, int height);
 };
 

@@ -13,10 +13,12 @@ int main( int argc, char** argv )
 
 	ImageProcessor img;
 	if (!img.openFile(imageName, p)) return 1;
-	img.printMetadata();
+	//img.printMetadata();
 
-	//img.applyDemosaic();
+	img.applyDemosaic();
+	img.applyNormalization();
 	img.applyResize(640, 0);
+
 	img.displayImage();
 
 	imageName = "foo.png";
