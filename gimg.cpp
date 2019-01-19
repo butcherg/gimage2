@@ -86,7 +86,6 @@ int main( int argc, char** argv )
 	if (argc < 2) err("Need at least a filename.\n");
 
 	int f;
-	opterr = 0;
 	while ((f = getopt(argc, argv, (char *) "d")) != -1)
 		switch(f) {
 			case 'd':  //display each step
