@@ -7,6 +7,7 @@ void ImageCommandProcessor::applyDemosaic()
 
 }
 
+
 void ImageCommandProcessor::applyNormalization()
 {
 

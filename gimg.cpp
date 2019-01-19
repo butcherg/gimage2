@@ -60,11 +60,18 @@ int main( int argc, char** argv )
 			printf("done.\n"); fflush(stdout);
 		}
 
+		else if (op[0] == "demosaic") {
+			printf("demosaic... "); fflush(stdout);
+			img.applyDemosaic();
+			if (display) img.displayImage();
+			printf("done.\n"); fflush(stdout);
+		}
+
 		else if (op[0] == "display") {
 			printf("display... "); fflush(stdout);
 			if (display) img.displayImage();
 			printf("done.\n"); fflush(stdout);
-		}
+ 		}
 
 		else if (op[0] == "resize") {
 			printf("resize... "); fflush(stdout);
