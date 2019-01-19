@@ -195,7 +195,17 @@ void ImageContainer::displayImage()
 void ImageContainer::displayImage(std::string displayname)
 {
 	cv::Mat draw;
+
+	unsigned width = 1000;
+	unsigned height = 0;
+
+	unsigned dw = getWidth();
+	unsigned dh = getHeight();
+	if (height ==  0) height = dh * ((float)width/(float)dw);
+	if (width == 0)  width = dw * ((float)height/(float)dh); 
+
 	image.convertTo(draw, CV_8U, 256.0);
+	if (image.cols > 1000) cv::resize( draw, draw, cv::Size( width, height), 0, 0, cv::INTER_LANCZOS4 );
 	cv::imshow(displayname, draw);
 	cv::waitKey(0);
 }
