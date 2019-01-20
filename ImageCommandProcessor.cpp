@@ -2,28 +2,53 @@
 
 
 /*
-void ImageCommandProcessor::applyDemosaic()
+bool ImageCommandProcessor::applyDemosaic()
 {
 
 }
 
 
-void ImageCommandProcessor::applyNormalization()
+bool ImageCommandProcessor::applyNormalization()
 {
 
 }
 */
 
-void ImageCommandProcessor::applyBlur(std::string params)
+bool ImageCommandProcessor::applyBlur(std::string params)
 {
 	std::map<std::string,std::string> p = parseparams(params);
 	unsigned kernelsize = p.find("kernelsize") != p.end() ? atoi(p["kernelsize"].c_str())  : 3;
 	ImageProcessor::applyBlur(kernelsize);
 }
 
-void ImageCommandProcessor::applyResize(std::string params)
+bool ImageCommandProcessor::convertICCColorProfile(std::string params)
+{
+	std::string profilepath;
+	cmsUInt32Number renderingintent;
+	bool blackpointcomp = false;
+
+	std::map<std::string,std::string> p = parseparams(params);
+	if (p.find("iccfile") != p.end())
+		profilepath = p["iccfile"].c_str();
+	else {
+		fprintf(getErrorFile(), "Error: no ICC file specified. ");
+		return false;
+	}
+	std::string intent = p.find("intent") != p.end() ? p["intent"].c_str() : "relative_colorimetric";
+	if (intent == "relative_colorimetric") renderingintent = INTENT_RELATIVE_COLORIMETRIC;
+	if (intent == "absolute_colorimetric") renderingintent = INTENT_ABSOLUTE_COLORIMETRIC;
+	if (intent == "saturation") renderingintent = INTENT_SATURATION;
+	if (intent == "perceptual") renderingintent = INTENT_PERCEPTUAL;
+	if (p.find("bpc") != p.end()) blackpointcomp = true;
+
+	ImageContainer::convertICCColorProfile(profilepath, renderingintent, blackpointcomp);
+	return true;
+}
+
+bool ImageCommandProcessor::applyResize(std::string params)
 {
 	int width=0, height=0, longest;
+
 	std::map<std::string,std::string> p = parseparams(params);
 	if (p.find("longest") != p.end()) {
 		longest = atoi(p["longest"].c_str());
@@ -36,14 +61,18 @@ void ImageCommandProcessor::applyResize(std::string params)
 		width  = p.find("width")  != p.end() ? atoi(p["width"].c_str())  : 0;
 		height = p.find("height") != p.end() ? atoi(p["height"].c_str()) : 0;
 	}
+
 	ImageProcessor::applyResize(width, height);
+	return true;
 }
 
-void ImageCommandProcessor::applySharpen(std::string params)
+bool ImageCommandProcessor::applySharpen(std::string params)
 {
 	std::map<std::string,std::string> p = parseparams(params);
 	float strength = p.find("strength") != p.end() ? atof(p["strength"].c_str())  : 1.0;
+
 	ImageProcessor::applySharpen(strength);
+	return true;
 }
 
 

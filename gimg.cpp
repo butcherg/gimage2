@@ -113,10 +113,10 @@ int main( int argc, char** argv )
 	//	return 0;
 	//}
 	
-	//if (argc == 3 && std::string(argv[2]) == "metadata") {
-	//	img.printMetadata();
-	//	return 0;
-	//}
+	if (argc == 3 && std::string(argv[2]) == "metadata") {
+		img.printMetadata();
+		return 0;
+	}
 
 	displayName = imageName;
 	if (display) cv::namedWindow(displayName);
@@ -133,6 +133,26 @@ int main( int argc, char** argv )
 				img.applyBlur(op[1]);
 			else
 				img.applyBlur("");
+			if (display) img.displayImage(displayName);
+			printf("done.\n"); fflush(stdout);
+		}
+
+		else if (op[0] == "assignprofile") {
+			printf("assignprofile... "); fflush(stdout);
+			if (op.size() >= 2)
+				img.assignICCColorProfile(op[1]);
+			else
+				printf("Error: no ICC file name specified. "); fflush(stdout);
+			if (display) img.displayImage(displayName);
+			printf("done.\n"); fflush(stdout);
+		}
+
+		else if (op[0] == "convertprofile") {
+			printf("convertprofile... "); fflush(stdout);
+			if (op.size() >= 2)
+				img.convertICCColorProfile(op[1]);
+			else
+				printf("Error: no parameters specified. "); fflush(stdout);
 			if (display) img.displayImage(displayName);
 			printf("done.\n"); fflush(stdout);
 		}

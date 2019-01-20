@@ -3,10 +3,17 @@
 #include <opencv2/imgproc.hpp>
 #include <math.h>
 
-
+/*
 struct pix {
 	float b, g, r;
 };
+*/
+
+union pix {
+  struct { float b, g, r; } ;
+  float v[3] ;
+} ;
+
 
 void ImageProcessor::applyBlur(unsigned kernelsize)
 {
@@ -29,6 +36,10 @@ void ImageProcessor::applyLog()
 
 void ImageProcessor::applyDemosaic()
 {
+	//This is the half algorithm from gimage.cpp
+
+	//ToDo: check to make sure data is CV_32FC1, exception?
+
 	unsigned w = image.cols;
 	unsigned h = image.rows;
 
@@ -37,12 +48,22 @@ void ImageProcessor::applyDemosaic()
 	pix * halfimage = (pix *) H.data;  //float RGB destination, half-sized
 	float * img = (float *) image.data; //single-channel float 
 
-	std::vector<unsigned> q = {0, 1, 1, 2};  //default pattern is RGGB, where R=0, G=1, B=2
-	//if (imginfo["LibrawCFAPattern"] == "GRBG") q = {1, 0, 2, 1};
-	//if (imginfo["LibrawCFAPattern"] == "GBRG") q = {1, 1, 0, 1};
-	//if (imginfo["LibrawCFAPattern"] == "BGGR") q = {2, 1, 1, 0};
+	std::vector<unsigned> q; // e.g., {0, 1, 1, 2}; Nikon pattern is RGGB, where R=0, G=1, B=2; Exiv2 value is "0 2 0 2 0 1 1 2"
 
+	Exiv2::ExifKey key = Exiv2::ExifKey("Exif.Photo.CFAPattern");
+	Exiv2::ExifData::iterator pos = exifdata.findKey(key);
+	if (pos != exifdata.end()) {
+		Exiv2::Value::AutoPtr v = pos->getValue();
+		std::string cfa =  v->toString();
+		//printf("CFA: \"%s\", ",cfa.c_str()); fflush(stdout);  //keep for eventual debugging
+		if (cfa == "0 2 0 2 0 1 1 2") q = {0, 1, 1, 2}; //RGGB
+		else if (cfa == "0 2 0 2 1 0 2 1") q = {1, 0, 2, 1}; //GRBG
+		else if (cfa == "0 2 0 2 1 2 0 1") q = {1, 2, 0, 1}; //GBRG
+		else if (cfa == "0 2 0 2 2 1 1 0") q = {2, 1, 1, 0}; //BGGR
+		else return;  //unsupported CFA pattern
+	}
 
+	//taken directly from gimage:
 	for (unsigned y=0; y<h-2; y+=2) {
 		for (unsigned x=0; x<w-2; x+=2) {
 			unsigned Hpos = (x/2) + (y/2)*(w/2);
@@ -62,24 +83,6 @@ void ImageProcessor::applyDemosaic()
 		}
 	}
 	image = H;
-
-/* //candidate code for image walking (https://jayrambhia.wordpress.com/2012/06/23/get-data-from-mat-cvmat-in-opencv/):
-	unsigned char *input = (unsigned char*)(img.data);
-
-	int i,j,r,g,b;
-	for(int i = 0;i < img.rows ;i++){
-		for(int j = 0;j < img.cols ;j++){
-			b = img.step * j + i;
-			g = img.step * j + i + 1;  //or, b+1;
-			r = img.step * j + i + 2;  //or, g+1;
-
-			input[r] = //some processing... ;
-			input[g] = //some processing... ;
-			input[b] = //some processing... ;
-		}
-	}
-
-*/
 }
 
 void ImageProcessor::applyNormalization()

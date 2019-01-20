@@ -35,6 +35,12 @@ public:
 	int getHeight();
 	int getColors();
 
+	void setErrorFile(FILE * e);
+	FILE * getErrorFile();
+
+	void assignICCColorProfile(std::string profilepath);
+	void convertICCColorProfile(std::string profilepath, cmsUInt32Number renderingintent, bool blackpointcomp);
+
 	void displayImage();
 	void displayImage(std::string displayname);
 	void printMetadata();
@@ -46,6 +52,8 @@ protected:
 	Exiv2::IptcData iptcdata;
 	Exiv2::XmpData xmpdata;
 	cmsHPROFILE profile;
+
+	FILE * errout;
 
 };
 

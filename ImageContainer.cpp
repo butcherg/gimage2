@@ -16,6 +16,7 @@
 ImageContainer::ImageContainer()
 {
 	profile = NULL;
+	errout = stdout;
 }
 
 ImageContainer::ImageContainer(const ImageContainer &imagecontainer)
@@ -25,6 +26,7 @@ ImageContainer::ImageContainer(const ImageContainer &imagecontainer)
 	iptcdata = Exiv2::IptcData(imagecontainer.iptcdata);
 	xmpdata = Exiv2::XmpData(imagecontainer.xmpdata);
 	profile = imagecontainer.profile;  //lcms maintains the profile guts, cmsHPROFILE is a handle to it
+	errout = imagecontainer.errout;
 }
 
 bool ImageContainer::openFile(std::string filename, std::map<std::string, std::string> params)
@@ -182,6 +184,80 @@ cmsHPROFILE& ImageContainer::getProfile()
 {	
 	return profile;
 }
+
+FILE * ImageContainer::getErrorFile()
+{
+	return errout;
+}
+
+void ImageContainer::setErrorFile(FILE * e)
+{
+	errout = e;
+}
+
+
+//color profile methods:
+
+void ImageContainer::assignICCColorProfile(std::string profilepath)
+{
+	cmsHPROFILE newprofile = cmsOpenProfileFromFile(profilepath.c_str(), "r");
+	if (newprofile) {
+		if (profile) cmsCloseProfile(profile);
+		profile = newprofile;
+	}
+	else fprintf(errout, "Error: ICC profile %s not successfully opened. ", profilepath.c_str());
+}
+
+void ImageContainer::convertICCColorProfile(std::string profilepath, cmsUInt32Number renderingintent, bool blackpointcomp)
+{
+	struct pix {
+		float b, g, r;
+	};
+
+	cmsUInt32Number format;
+	cmsHTRANSFORM hTransform;
+	cmsUInt32Number dwFlags = 0;
+	
+	if (blackpointcomp) dwFlags = cmsFLAGS_BLACKPOINTCOMPENSATION;
+
+	format = TYPE_BGR_FLT; 
+
+	cmsHPROFILE hImgProf = cmsOpenProfileFromFile(profilepath.c_str(), "r");
+
+	if (!hImgProf) {
+		fprintf(errout, "Error: ICC profile %s not successfully opened. ", profilepath.c_str());
+		return;
+	}
+	
+	//if (!gImgProf) {lasterror = GIMAGE_APPLYCOLORSPACE_BADPROFILE; return lasterror;}
+	//if (!hImgProf) {lasterror = GIMAGE_APPLYCOLORSPACE_BADPROFILE; return lasterror;}
+
+	//if (!cmsIsIntentSupported(gImgProf, intent, LCMS_USED_AS_INPUT))  {lasterror = GIMAGE_APPLYCOLORSPACE_BADINTENT; return lasterror;}
+	//if (!cmsIsIntentSupported(hImgProf, intent, LCMS_USED_AS_OUTPUT)) {lasterror = GIMAGE_APPLYCOLORSPACE_BADINTENT; return lasterror;}
+
+	if (profile) {
+		if (hImgProf) {
+			hTransform = cmsCreateTransform(profile, format, hImgProf, format, renderingintent, dwFlags);
+			//if (hTransform == NULL) {lasterror = GIMAGE_APPLYCOLORSPACE_BADTRANSFORM; return lasterror;}
+			
+			pix* img = (pix *) image.data;
+			#pragma omp parallel for num_threads(threadcount)
+			for (unsigned y=0; y<image.rows; y++) {
+				unsigned pos = y*image.cols;
+				cmsDoTransform(hTransform, &img[pos], &img[pos], image.cols);
+
+			}
+
+			char * prof; cmsUInt32Number proflen;	
+			if (profile) cmsCloseProfile(profile);
+			profile = hImgProf;
+		}
+		else fprintf(errout, "Error: ICC output profile invalid. ");
+	}
+	else fprintf(errout, "Error: ICC input profile invalid. ");
+	//{lasterror = GIMAGE_OK; return lasterror;}
+}
+
 
 void ImageContainer::displayImage()
 {
