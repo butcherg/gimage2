@@ -19,6 +19,7 @@ bool ImageCommandProcessor::applyBlur(std::string params)
 	std::map<std::string,std::string> p = parseparams(params);
 	unsigned kernelsize = p.find("kernelsize") != p.end() ? atoi(p["kernelsize"].c_str())  : 3;
 	ImageProcessor::applyBlur(kernelsize);
+	return true;
 }
 
 bool ImageCommandProcessor::convertICCColorProfile(std::string params)
